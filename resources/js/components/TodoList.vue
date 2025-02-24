@@ -15,29 +15,82 @@
             </button>
         </form>
     </div>
-    <ul class="mt-4 w-96">
-        <li
-            v-for="(todo, index) in todos"
-            :key="index"
-            class="flex justify-between p-2 border-b"
-        >
-            {{ todo.task }}
-        </li>
-    </ul>
+    <div class="flex justify-center">
+        <div class="w-full mt-4">
+            <div
+                v-for="(todo, index) in todos"
+                :key="index"
+                class="flex justify-between w-full p-2 mt-2 border rounded"
+            >
+                <div>
+                    <p>
+                        {{ todo.task }}
+                    </p>
+                    <p class="text-[#6C7780]">Created</p>
+                </div>
+                <div>
+                    <div class="flex justify-between gap-8">
+                        <button
+                            class="text-[#16803C] flex justify-between"
+                            @click="showModal = true"
+                        >
+                            <img
+                                src="/public/lucide--edit.svg"
+                                alt=""
+                                width="24px"
+                                height="24px"
+                            />Edit
+                        </button>
+                        <Modal v-if="showModal" @close="showModal = false">
+                            <p>Are you sure?</p>
+                        </Modal>
+                        <button
+                            class="text-[#F60C1F] flex justify-between"
+                            @click="showModal = true"
+                        >
+                            <img
+                                src="/public/material-symbols--delete-outline.svg"
+                                width="24px"
+                                height="24px"
+                            />Delete
+                        </button>
+                    </div>
+                    <div class="text-[#6C7780]">
+                        {{
+                            new Date(todo.created_at).toLocaleDateString(
+                                "en-US",
+                                {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                }
+                            )
+                        }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
 import axios from "axios";
+import Modal from "./ModalDelete.vue";
 
 export default {
+    components: {
+        Modal,
+    },
     data() {
         return {
             newTask: "",
             todos: [],
+            showModal: false,
         };
     },
     mounted() {
-        this.fetchTasks(); // Load tasks from DB when the component is mounted
+        data = this.fetchTasks(); // Load tasks from DB when the component is mounted
+        console.log(data);
     },
     methods: {
         async addTodo() {
@@ -61,9 +114,16 @@ export default {
             try {
                 const response = await axios.get("http://127.0.0.1:8000/tasks");
                 this.todos = response.data; // Load tasks from backend
+                console.log(this.todos);
             } catch (error) {
                 console.error("Error fetching tasks:", error);
             }
+        },
+        handleEdit() {
+            console.log("Edit!!!!");
+        },
+        handleDelete() {
+            console.log("Delete!!!!");
         },
     },
 };
